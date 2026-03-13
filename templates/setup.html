@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <h1>Setup Your Journal</h1>
+    <p>Please choose a strong passphrase. This passphrase will be used to encrypt your journal entries. **It cannot be recovered if lost.**</p>
+    <form action="{{root_url}}auth/setup" method="POST">
+        <div class="form-group">
+            <label for="passphrase">Journal Passphrase:</label>
+            <input type="password" id="passphrase" name="passphrase" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_passphrase">Confirm Passphrase:</label>
+            <input type="password" id="confirm_passphrase" name="confirm_passphrase" required>
+        </div>
+        <button type="submit">Initialize Journal</button>
+    </form>
+</div>
+
+<style>
+.auth-container {
+    max-width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background: #444;
+}
+</style>
+{% endblock %}

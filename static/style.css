@@ -1,0 +1,114 @@
+:root {
+    --bg-color: #fafafa;
+    --sidebar-bg: #f0f0f0;
+    --text-color: #333;
+    --link-color: #0066cc;
+    --border-color: #e0e0e0;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    height: 100vh;
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 8px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: var(--link-color);
+}
+
+.sidebar a:hover {
+    text-decoration: underline;
+}
+
+.logout {
+    margin-top: auto;
+}
+
+.logout button {
+    width: 100%;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.logout button:hover {
+    background: #e9e9e9;
+}
+
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.editor-header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: normal;
+    color: #666;
+}
+
+#save-status {
+    font-size: 0.9em;
+    color: #888;
+}
+
+#markdown-editor {
+    flex: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 1.1em;
+    line-height: 1.6;
+    background: transparent;
+    color: var(--text-color);
+    font-family: var(--font-family);
+}

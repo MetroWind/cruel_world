@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="attachments-container">
+    <h1>Manage Attachments</h1>
+    
+    <div class="upload-section">
+        <form action="{{root_url}}api/attachments" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <button type="submit">Upload Attachment</button>
+        </form>
+    </div>
+
+    <ul class="attachment-list">
+        {% for a in attachments %}
+        <li>
+            <strong>{{ a.filename }}</strong> ({{ a.mime_type }})
+            <br>
+            <code>{{ root_url }}attachments/{{ a.slug }}</code>
+            <button onclick="copyToClipboard('{{ root_url }}attachments/{{ a.slug }}')">Copy URL</button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+    });
+}
+</script>
+
+<style>
+.attachment-list {
+    list-style: none;
+    padding: 0;
+}
+.attachment-list li {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+.upload-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid var(--border-color);
+}
+</style>
+{% endblock %}
