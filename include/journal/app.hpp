@@ -57,6 +57,7 @@ private:
     void handleAttachmentPost(const Request& req, Response& res);
     void handleAttachmentGet(const Request& req, Response& res);
     void handleAttachmentManage(const Request& req, Response& res);
+    void handleAttachmentDelete(const Request& req, Response& res);
 
     // Helpers
     std::string getSessionCookie(const Request& req) const;

@@ -77,6 +77,18 @@ void JournalApp::render(Response& res, const std::string& template_name,
     {
         data["past_entries"] = nlohmann::json::array();
     }
+    if(!data.contains("is_edit_mode"))
+    {
+        data["is_edit_mode"] = false;
+    }
+    if(!data.contains("date"))
+    {
+        data["date"] = "";
+    }
+    if(!data.contains("is_attachments_page"))
+    {
+        data["is_attachments_page"] = false;
+    }
 
     try
     {
@@ -199,6 +211,12 @@ void JournalApp::setup()
                    .path(),
                [this](const Request& req, Response& res)
                { handleAttachmentGet(req, res); });
+    server.Post(mw::URL::fromStr(config_.root_url)
+                    .value()
+                    .appendPath("attachments/:slug/delete")
+                    .path(),
+                [this](const Request& req, Response& res)
+                { handleAttachmentDelete(req, res); });
 
     server.Get(mw::URL::fromStr(config_.root_url)
                    .value()
@@ -278,6 +296,7 @@ void JournalApp::handleIndex(const Request& req, Response& res)
            {{"date", today},
             {"markdown_body", ""},
             {"html_content", ""},
+            {"is_edit_mode", true},
             {"past_entries", getPastEntries(session_opt.value().user_id)}});
 }
 
@@ -540,6 +559,7 @@ void JournalApp::handleEntryGet(const Request& req, Response& res)
            {{"date", entry.date},
             {"markdown_body", markdown},
             {"html_content", html},
+            {"is_edit_mode", false},
             {"past_entries", getPastEntries(session->user_id)}});
 }
 
@@ -711,7 +731,32 @@ void JournalApp::handleAttachmentManage(const Request& req, Response& res)
         }
     }
 
-    render(res, "attachments.html", {{"attachments", atts_json}});
+    render(res, "attachments.html",
+           {{"attachments", atts_json}, {"is_attachments_page", true}});
+}
+
+void JournalApp::handleAttachmentDelete(const Request& req, Response& res)
+{
+    std::string session_id = getSessionCookie(req);
+    auto session = session_manager_.getSession(session_id);
+    if(!session || session->state != SessionState::UNLOCKED)
+    {
+        res.status = 401;
+        return;
+    }
+
+    std::string slug = req.path_params.at("slug");
+    auto err = db_.deleteAttachment(session->user_id, slug);
+    if(!err)
+    {
+        res.status = 500;
+        return;
+    }
+
+    res.set_redirect(mw::URL::fromStr(config_.root_url)
+                         .value()
+                         .appendPath("attachments/manage")
+                         .str());
 }
 
 std::string JournalApp::getSessionCookie(const Request& req) const

@@ -2,6 +2,7 @@
 
 #include <format>
 
+#include <mw/utils.hpp>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 
@@ -33,65 +34,46 @@ mw::E<std::vector<uint8_t>>
 CryptoEngine::deriveKEK(const std::string& passphrase,
                         const std::vector<uint8_t>& salt)
 {
-    auto res =
-        crypto_.deriveKeyArgon2id(passphrase, vecToStr(salt), 3, 4096, 1, 32);
-    if(!res.has_value())
-    {
-        return std::unexpected(res.error());
-    }
-    return res.value();
+    ASSIGN_OR_RETURN(
+        auto res,
+        crypto_.deriveKeyArgon2id(passphrase, vecToStr(salt), 3, 4096, 1, 32));
+    return res;
 }
 
 mw::E<std::vector<uint8_t>>
 CryptoEngine::encryptDEK(const std::vector<uint8_t>& dek,
                          const std::vector<uint8_t>& kek)
 {
-    auto res = crypto_.encrypt(mw::EncryptionAlgorithm::AES_256_GCM,
-                               vecToStr(kek), vecToStr(dek));
-    if(!res.has_value())
-    {
-        return std::unexpected(res.error());
-    }
-    return strToVec(res.value());
+    ASSIGN_OR_RETURN(auto res, crypto_.encrypt(mw::EncryptionAlgorithm::AES_256_GCM,
+                                               vecToStr(kek), vecToStr(dek)));
+    return strToVec(res);
 }
 
 mw::E<std::vector<uint8_t>>
 CryptoEngine::decryptDEK(const std::vector<uint8_t>& encrypted_dek,
                          const std::vector<uint8_t>& kek)
 {
-    auto res = crypto_.decrypt(mw::EncryptionAlgorithm::AES_256_GCM,
-                               vecToStr(kek), vecToStr(encrypted_dek));
-    if(!res.has_value())
-    {
-        return std::unexpected(res.error());
-    }
-    return strToVec(res.value());
+    ASSIGN_OR_RETURN(auto res, crypto_.decrypt(mw::EncryptionAlgorithm::AES_256_GCM,
+                                               vecToStr(kek), vecToStr(encrypted_dek)));
+    return strToVec(res);
 }
 
 mw::E<std::vector<uint8_t>>
 CryptoEngine::encryptData(const std::vector<uint8_t>& data,
                           const std::vector<uint8_t>& dek)
 {
-    auto res = crypto_.encrypt(mw::EncryptionAlgorithm::AES_256_GCM,
-                               vecToStr(dek), vecToStr(data));
-    if(!res.has_value())
-    {
-        return std::unexpected(res.error());
-    }
-    return strToVec(res.value());
+    ASSIGN_OR_RETURN(auto res, crypto_.encrypt(mw::EncryptionAlgorithm::AES_256_GCM,
+                                               vecToStr(dek), vecToStr(data)));
+    return strToVec(res);
 }
 
 mw::E<std::vector<uint8_t>>
 CryptoEngine::decryptData(const std::vector<uint8_t>& encrypted_data,
                           const std::vector<uint8_t>& dek)
 {
-    auto res = crypto_.decrypt(mw::EncryptionAlgorithm::AES_256_GCM,
-                               vecToStr(dek), vecToStr(encrypted_data));
-    if(!res.has_value())
-    {
-        return std::unexpected(res.error());
-    }
-    return strToVec(res.value());
+    ASSIGN_OR_RETURN(auto res, crypto_.decrypt(mw::EncryptionAlgorithm::AES_256_GCM,
+                                               vecToStr(dek), vecToStr(encrypted_data)));
+    return strToVec(res);
 }
 
 mw::E<std::vector<uint8_t>> CryptoEngine::generateSalt(int length)

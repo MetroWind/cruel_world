@@ -63,6 +63,7 @@ public:
     mw::E<void> insertAttachment(const Attachment& attachment);
     mw::E<std::optional<Attachment>> getAttachmentBySlug(const std::string& slug);
     mw::E<std::vector<Attachment>> listAttachments(int user_id);
+    mw::E<void> deleteAttachment(int user_id, const std::string& slug);
 
 private:
     std::unique_ptr<mw::SQLite> db_;

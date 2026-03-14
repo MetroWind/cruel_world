@@ -14,10 +14,17 @@
     <ul class="attachment-list">
         {% for a in attachments %}
         <li>
-            <strong>{{ a.filename }}</strong> ({{ a.mime_type }})
-            <br>
-            <code>{{ root_url }}attachments/{{ a.slug }}</code>
-            <button onclick="copyToClipboard('{{ root_url }}attachments/{{ a.slug }}')">Copy URL</button>
+            <div class="attachment-info">
+                <strong>{{ a.filename }}</strong> ({{ a.mime_type }})
+                <br>
+                <code>{{ root_url }}attachments/{{ a.slug }}</code>
+            </div>
+            <div class="attachment-actions">
+                <button onclick="copyToClipboard('{{ root_url }}attachments/{{ a.slug }}')">Copy URL</button>
+                <form action="{{root_url}}attachments/{{ a.slug }}/delete" method="POST" class="delete-form">
+                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this attachment?');">Delete</button>
+                </form>
+            </div>
         </li>
         {% endfor %}
     </ul>
@@ -30,21 +37,4 @@ function copyToClipboard(text) {
     });
 }
 </script>
-
-<style>
-.attachment-list {
-    list-style: none;
-    padding: 0;
-}
-.attachment-list li {
-    padding: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-.upload-section {
-    margin-bottom: 20px;
-    padding: 20px;
-    background: #f9f9f9;
-    border: 1px solid var(--border-color);
-}
-</style>
 {% endblock %}

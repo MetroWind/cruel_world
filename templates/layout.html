@@ -11,12 +11,13 @@
             <h2>Journal</h2>
             <nav>
                 <ul>
-                    <li><a href="{{root_url}}">Today</a></li>
+                    <li><a href="{{root_url}}" {% if is_edit_mode %}class="active"{% endif %}>Today</a></li>
+                    <li><a href="{{root_url}}attachments/manage" {% if is_attachments_page %}class="active"{% endif %}>Attachments</a></li>
                 </ul>
                 <h3>Past Entries</h3>
                 <ul>
                     {% for e in past_entries %}
-                    <li><a href="{{root_url}}entry/{{e.slug}}">{{e.date}}</a></li>
+                    <li><a href="{{root_url}}entry/{{e.slug}}" {% if e.date == date %}class="active"{% endif %}>{{e.date}}</a></li>
                     {% endfor %}
                 </ul>
             </nav>

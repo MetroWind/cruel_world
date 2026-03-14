@@ -201,6 +201,61 @@ TEST_F(AppTest, CanCreateAndGetEntry)
                            .addHeader("Cookie", "session_id=" + session_id)));
         EXPECT_EQ(res3->status, 200);
         EXPECT_THAT(res3->payloadAsStr(), testing::HasSubstr("Hello World"));
+        EXPECT_THAT(res3->payloadAsStr(), testing::HasSubstr("let isEditing = false;"));
+    }
+    app->stop();
+    app->wait();
+}
+
+TEST_F(AppTest, DefaultModeIsCorrect)
+{
+    EXPECT_TRUE(mw::isExpected(app->start()));
+    {
+        mw::HTTPSession client;
+        // 1. Setup
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res1,
+            client.get(mw::HTTPRequest(
+                "http://127.0.0.1:8080/auth/callback?code=authcode_123")));
+        std::string cookie = res1->header.at("Set-Cookie");
+        std::string session_id = cookie.substr(11, cookie.find(';') - 11);
+
+        client.post(
+            mw::HTTPRequest("http://127.0.0.1:8080/auth/setup")
+                .addHeader("Cookie", "session_id=" + session_id)
+                .setPayload("passphrase=secret123&confirm_passphrase=secret123")
+                .setContentType("application/x-www-form-urlencoded"));
+
+        // 2. Access index (new entry for today) -> Should be in Edit mode
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res2,
+            client.get(mw::HTTPRequest("http://127.0.0.1:8080/")
+                           .addHeader("Cookie", "session_id=" + session_id)));
+        // Note: handleIndex might redirect if entry exists, but here it shouldn't.
+        // Wait, handleIndex redirects to /entry/:slug if it exists.
+        // If not, it renders editor.html.
+        EXPECT_EQ(res2->status, 200);
+        EXPECT_THAT(res2->payloadAsStr(), testing::HasSubstr("let isEditing = true;"));
+        EXPECT_THAT(res2->payloadAsStr(), testing::HasSubstr(">View</button>"));
+
+        // 3. Create an entry
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res3,
+            client.post(
+                mw::HTTPRequest("http://127.0.0.1:8080/entry/2023-10-27")
+                    .addHeader("Cookie", "session_id=" + session_id)
+                    .setPayload(R"({"body": "Existing Entry"})")));
+        auto json = nlohmann::json::parse(res3->payloadAsStr());
+        std::string slug = json["slug"];
+
+        // 4. Access existing entry -> Should be in View mode
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res4,
+            client.get(mw::HTTPRequest("http://127.0.0.1:8080/entry/" + slug)
+                           .addHeader("Cookie", "session_id=" + session_id)));
+        EXPECT_EQ(res4->status, 200);
+        EXPECT_THAT(res4->payloadAsStr(), testing::HasSubstr("let isEditing = false;"));
+        EXPECT_THAT(res4->payloadAsStr(), testing::HasSubstr(">Edit</button>"));
     }
     app->stop();
     app->wait();
@@ -267,6 +322,24 @@ TEST_F(AppTest, CanUploadAndDownloadAttachment)
                     .addHeader("Cookie", "session_id=" + session_id)));
         EXPECT_EQ(res4->status, 200);
         EXPECT_THAT(res4->payloadAsStr(), testing::HasSubstr("test.txt"));
+
+        // 5. Delete attachment
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res5,
+            client.post(
+                mw::HTTPRequest("http://127.0.0.1:8080/attachments/" + slug + "/delete")
+                    .addHeader("Cookie", "session_id=" + session_id)));
+        EXPECT_EQ(res5->status, 302);
+        EXPECT_EQ(res5->header.at("Location"), "http://localhost:8080/attachments/manage");
+
+        // 6. Verify attachment is deleted
+        ASSIGN_OR_FAIL(
+            const mw::HTTPResponse* res6,
+            client.get(
+                mw::HTTPRequest("http://127.0.0.1:8080/attachments/manage")
+                    .addHeader("Cookie", "session_id=" + session_id)));
+        EXPECT_EQ(res6->status, 200);
+        EXPECT_THAT(res6->payloadAsStr(), testing::Not(testing::HasSubstr("test.txt")));
     }
     app->stop();
     app->wait();
