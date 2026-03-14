@@ -1,0 +1,47 @@
+pkgname=cruel-world-git
+pkgver=r1.1234567
+pkgrel=1
+pkgdesc="A private, secure, and intimate online diary application."
+arch=('x86_64')
+url="https://github.com/MetroWind/cruel_world"
+license=('unknown')
+depends=('gcc-libs' 'glibc' 'openssl' 'sqlite' 'curl' 'zlib')
+makedepends=('cmake' 'git')
+backup=('etc/cruel-world.yaml')
+source=("git+$url.git"
+        "cruel-world.service"
+        "cruel-world.sysusers"
+        "cruel-world.tmpfiles"
+        "cruel-world.yaml")
+sha256sums=('SKIP'
+            '76da3e992d9608d13021da4a5bb0e84f08f3dcfbdb2bb6c9be3f4cd1ce124912'
+            '10d3769f94dd5b707b1ed68d69ca89e0fd27ad585ba655a7e8bf0cd75ef10bf6'
+            'fccd63eaf9e8235511f6ebea60aee506717928b76506631ff823dd1a6acb3f7c'
+            '567f0da09a1d25601a6093dc711549c6c312996112f8c94318171b1d338af2a9')
+
+pkgver() {
+  cd "cruel_world"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cmake -B build -S "cruel_world" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCRUEL_WORLD_BUILD_TESTS=OFF
+  cmake --build build -j $(nproc)
+}
+
+package() {
+  install -Dm755 build/cruel_world "$pkgdir/usr/bin/cruel_world"
+
+  install -Dm644 cruel-world.service "$pkgdir/usr/lib/systemd/system/cruel-world.service"
+  install -Dm644 cruel-world.sysusers "$pkgdir/usr/lib/sysusers.d/cruel-world.conf"
+  install -Dm644 cruel-world.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/cruel-world.conf"
+
+  install -Dm640 cruel-world.yaml "$pkgdir/etc/cruel-world.yaml"
+
+  cd "cruel_world"
+  install -d "$pkgdir/usr/share/cruel-world"
+  cp -r templates static "$pkgdir/usr/share/cruel-world/"
+}

@@ -1,0 +1,14 @@
+# Network settings
+bind_address: "127.0.0.1"
+bind_port: 8080
+
+# The base URL for the application. All redirects and links are based on this.
+root_url: "http://localhost:8080/"
+
+# Directory where the application stores its data (database, etc.)
+data_dir: "/var/lib/cruel-world"
+
+# OIDC Settings
+oidc_url_prefix: "https://auth.example.com/realms/myrealm/"
+oidc_client_id: "cruel-world-client"
+oidc_client_secret: "your-client-secret"

@@ -1,0 +1,4 @@
+d /var/lib/cruel-world 0750 cruel cruel -
+L /var/lib/cruel-world/templates - - - - /usr/share/cruel-world/templates
+L /var/lib/cruel-world/static - - - - /usr/share/cruel-world/static
+z /etc/cruel-world.yaml 0640 root cruel -

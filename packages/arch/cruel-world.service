@@ -1,0 +1,14 @@
+[Unit]
+Description=Cruel World Online Diary
+After=network.target
+
+[Service]
+Type=simple
+User=cruel
+Group=cruel
+ExecStart=/usr/bin/cruel_world /etc/cruel-world.yaml
+Restart=on-failure
+WorkingDirectory=/var/lib/cruel-world
+
+[Install]
+WantedBy=multi-user.target
