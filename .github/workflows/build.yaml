@@ -40,7 +40,7 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
         # Compress the binary built by makepkg
-        zstd packages/arch/src/cruel_world/build/cruel_world -o cruel_world.zst
+        zstd packages/arch/src/build/cruel_world -o cruel_world.zst
 
     - name: Find Package File
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
