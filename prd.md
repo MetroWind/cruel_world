@@ -1,6 +1,6 @@
 # Cruel World
 
-A private, secure, intimate online journal server in modern C++23.
+A private, secure, intimate online diary server in modern C++23.
 
 ## Requirements
 
@@ -10,9 +10,9 @@ A private, secure, intimate online journal server in modern C++23.
   `mw::URL` class. You should check https://github.com/MetroWind/libmw
   to see what it can do.
 * If a function can fail, it should return a `mw::E<>`.
-* A journal entry is just a date with a Markdown body.
-* Each journal entry should have a unique URL.
-* There is at most one journal entry each day for each user.
+* A diary entry is just a date with a Markdown body.
+* Each diary entry should have a unique URL.
+* There is at most one diary entry each day for each user.
 * Use the MacroDown library to render markdown
   https://git.xeno.darksair.org/macrodown/
 * Authentication is through an external OpenID Connect service (e.g.
@@ -25,15 +25,15 @@ A private, secure, intimate online journal server in modern C++23.
   openid-configuration endpoint. See
   https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationResponse
   for details.
-* Journal entries are encrypted with AES-256-GCM. Each user has their
+* Diary entries are encrypted with AES-256-GCM. Each user has their
   own key.
-* One should not be able to read the journals by simply having access
+* One should not be able to read the diarys by simply having access
   to the database file.
 * Implement Envelope Encryption: each user has a unique Data Encryption
-  Key (DEK) for AES-256 encryption of their journal entries.
-* Users must provide a separate "Journal Passphrase" (distinct from their
-  OIDC login) to unlock their journal.
-* The Journal Passphrase is used to derive a Key Encryption Key (KEK)
+  Key (DEK) for AES-256 encryption of their diary entries.
+* Users must provide a separate "Diary Passphrase" (distinct from their
+  OIDC login) to unlock their diary.
+* The Diary Passphrase is used to derive a Key Encryption Key (KEK)
   using a strong Key Derivation Function.
 * The database stores the user's DEK encrypted by their KEK (also
   AES-256-GCM). The plaintext DEK is never written to disk.
@@ -42,10 +42,10 @@ A private, secure, intimate online journal server in modern C++23.
 * A user’s session should immediately expire when they close the
   browser tab.
 * UX Flow: Users authenticate via OIDC first (Login), then enter their
-  Journal Passphrase to decrypt their DEK (Unlock) before reading or
+  Diary Passphrase to decrypt their DEK (Unlock) before reading or
   writing entries.
 * Support attachment uploading. Uploaded attachments are also stored
-  in the database, and are encrypted in the same way as the journals.
+  in the database, and are encrypted in the same way as the diarys.
 * Each attachment will have a unique URL using a random slug.
 * Provide an interface to manage attachments. There should be a way to
   easily copy the URL of the attachments.

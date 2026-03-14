@@ -1,6 +1,6 @@
 # Secure Online Cruel World
 
-A private, secure, and intimate online journaling application built with C++23.
+A private, secure, and intimate online diary application built with C++23.
 
 ## Features
 
