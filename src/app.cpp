@@ -1,4 +1,4 @@
-#include "journal/app.hpp"
+#include "app.hpp"
 
 #include <chrono>
 #include <format>

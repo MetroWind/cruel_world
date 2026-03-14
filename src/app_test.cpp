@@ -4,9 +4,9 @@
 #include <mw/http_client_mock.hpp>
 #include <mw/test_utils.hpp>
 
-#include "journal/app.hpp"
-#include "journal/config.hpp"
-#include "journal/db.hpp"
+#include "app.hpp"
+#include "config.hpp"
+#include "db.hpp"
 
 using ::testing::_;
 using ::testing::Return;
@@ -19,7 +19,7 @@ protected:
         config.root_url = "http://localhost:8080/";
         config.bind_address = "127.0.0.1";
         config.bind_port = 8080;
-        config.data_dir = "."; // use current dir, app will look for data.db, static, templates
+        config.data_dir = "."; // use current dir, app will look for cruel_world.db, static, templates
         config.oidc_url_prefix = "https://auth/";
         config.oidc_client_id = "client";
         config.oidc_client_secret = "secret";
@@ -145,7 +145,7 @@ TEST_F(AppTest, CanHandleSetupFlow)
                            .addHeader("Cookie", "session_id=" + session_id)));
         EXPECT_EQ(res2->status, 200);
         EXPECT_THAT(res2->payloadAsStr(),
-                    testing::HasSubstr("Setup Your Journal"));
+                    testing::HasSubstr("Setup Your Cruel World"));
 
         // 3. Post setup data
         ASSIGN_OR_FAIL(

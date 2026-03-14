@@ -1,10 +1,10 @@
-#include "journal/session_manager.hpp"
+#include "session_manager.hpp"
 
 #include <chrono>
 
 #include <openssl/rand.h>
 
-#include "journal/crypto_engine.hpp"
+#include "crypto_engine.hpp"
 
 namespace
 {

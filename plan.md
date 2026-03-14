@@ -1,6 +1,6 @@
-# Implementation Plan: Secure Online Journal
+# Implementation Plan: Secure Online Cruel World
 
-This document outlines the step-by-step implementation plan for the Secure Online Journal server, based on the requirements in `prd.md` and the architecture detailed in `designs/design-0.md`.
+This document outlines the step-by-step implementation plan for the Secure Online Cruel World server, based on the requirements in `prd.md` and the architecture detailed in `designs/design-0.md`.
 
 ## Phase 1: Project Setup & Core Infrastructure
 **Goal:** Establish the build system, dependencies, directory structure, and basic application configuration.

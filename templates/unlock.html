@@ -2,11 +2,11 @@
 
 {% block content %}
 <div class="auth-container">
-    <h1>Unlock Your Journal</h1>
-    <p>Please enter your journal passphrase to unlock your entries.</p>
+    <h1>Unlock Your Cruel World</h1>
+    <p>Please enter your passphrase to unlock your entries.</p>
     <form action="{{root_url}}auth/unlock" method="POST">
         <div class="form-group">
-            <label for="passphrase">Journal Passphrase:</label>
+            <label for="passphrase">Cruel World Passphrase:</label>
             <input type="password" id="passphrase" name="passphrase" required autofocus>
         </div>
         {% if exists("error") %}

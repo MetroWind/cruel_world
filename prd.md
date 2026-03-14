@@ -1,4 +1,4 @@
-# Journal
+# Cruel World
 
 A private, secure, intimate online journal server in modern C++23.
 

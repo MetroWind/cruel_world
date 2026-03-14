@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "journal/config.hpp"
+#include "config.hpp"
 
 TEST(ConfigTest, LoadValidConfig)
 {

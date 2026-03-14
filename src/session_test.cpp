@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "journal/session_manager.hpp"
+#include "session_manager.hpp"
 
 TEST(SessionManagerTest, CreateAndGet)
 {

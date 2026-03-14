@@ -1,4 +1,4 @@
-#include "journal/config.hpp"
+#include "config.hpp"
 
 #include <format>
 #include <fstream>

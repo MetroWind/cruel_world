@@ -1,4 +1,4 @@
-#include "journal/db.hpp"
+#include "db.hpp"
 
 #include <format>
 

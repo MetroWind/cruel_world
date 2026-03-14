@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "journal/crypto_engine.hpp"
+#include "crypto_engine.hpp"
 
 TEST(CryptoEngineTest, DEKGeneration)
 {

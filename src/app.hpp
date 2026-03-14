@@ -11,10 +11,10 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include "journal/config.hpp"
-#include "journal/db.hpp"
-#include "journal/crypto_engine.hpp"
-#include "journal/session_manager.hpp"
+#include "config.hpp"
+#include "db.hpp"
+#include "crypto_engine.hpp"
+#include "session_manager.hpp"
 
 class JournalApp : public mw::HTTPServer {
 public:

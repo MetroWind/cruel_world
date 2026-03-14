@@ -1,16 +1,16 @@
-# Secure Online Journal
+# Secure Online Cruel World
 
 A private, secure, and intimate online journaling application built with C++23.
 
 ## Features
 
-- **End-to-End Privacy:** Journal entries and attachments are encrypted using AES-256-GCM.
+- **End-to-End Privacy:** Entries and attachments are encrypted using AES-256-GCM.
 - **Envelope Encryption:** Each user has a unique Data Encryption Key (DEK), which is itself encrypted by a Key Encryption Key (KEK) derived from a user-provided passphrase.
 - **Secure Sessions:** The decrypted DEK is held only in volatile memory and is securely zeroed when the session expires or the server restarts.
 - **Background Session Reaper:** Periodically wipes expired sessions to minimize the window of vulnerability.
 - **Modern Web Interface:** A fast, responsive, vanilla CSS-based UI with minimal JavaScript.
 - **Markdown Support:** Write entries in Markdown with live preview and automatic rendering via MacroDown.
-- **Attachments:** Securely upload and manage files referenced in your journal.
+- **Attachments:** Securely upload and manage files referenced in your Cruel World.
 - **OIDC Authentication:** Integrates with external OpenID Connect providers (e.g., Keycloak).
 
 ## Tech Stack
@@ -43,7 +43,7 @@ cmake --build . -j $(nproc)
 1. Create a `config.yaml` based on the configuration guide below.
 2. Run the application:
    ```bash
-   ./journal_app config.yaml
+   ./cruel_world config.yaml
    ```
 
 ## Configuration
@@ -58,12 +58,12 @@ bind_port: 8080
 # The base URL for the application. All redirects and links are based on this.
 root_url: "http://localhost:8080/"
 
-# Storage path for the SQLite database
-database_path: "journal.db"
+# Directory where the application stores its data (database, etc.)
+data_dir: "."
 
 # OIDC Settings
 oidc_url_prefix: "https://auth.example.com/realms/myrealm/"
-oidc_client_id: "journal-client"
+oidc_client_id: "cruel-world-client"
 oidc_client_secret: "your-client-secret"
 ```
 
@@ -72,7 +72,7 @@ oidc_client_secret: "your-client-secret"
 To build and run unit tests:
 
 ```bash
-cmake -DJOURNAL_BUILD_TESTS=ON ..
+cmake -DCRUEL_WORLD_BUILD_TESTS=ON ..
 cmake --build .
 ctest --test-dir . --output-on-failure
 ```
@@ -81,4 +81,4 @@ ctest --test-dir . --output-on-failure
 
 ## Security Model
 
-The journal uses **Envelope Encryption**. Your journal passphrase is never stored. It is used with a unique salt and a strong KDF to derive a KEK. This KEK decrypts your master DEK stored in the database. The decrypted DEK is only ever stored in the server's RAM and is wiped using `mw::crypto::secure_zero` upon logout or session timeout.
+Cruel World uses **Envelope Encryption**. Your Cruel World passphrase is used to derive a Key Encryption Key (KEK) which decrypts your master Data Encryption Key (DEK). The decrypted DEK remains in memory for the duration of the session and is cleared when the session expires or the user logs out.

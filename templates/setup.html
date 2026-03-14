@@ -2,18 +2,18 @@
 
 {% block content %}
 <div class="auth-container">
-    <h1>Setup Your Journal</h1>
-    <p>Please choose a strong passphrase. This passphrase will be used to encrypt your journal entries. **It cannot be recovered if lost.**</p>
+    <h1>Setup Your Cruel World</h1>
+    <p>Please choose a strong passphrase. This passphrase will be used to encrypt your entries. **It cannot be recovered if lost.**</p>
     <form action="{{root_url}}auth/setup" method="POST">
         <div class="form-group">
-            <label for="passphrase">Journal Passphrase:</label>
+            <label for="passphrase">Cruel World Passphrase:</label>
             <input type="password" id="passphrase" name="passphrase" required>
         </div>
         <div class="form-group">
             <label for="confirm_passphrase">Confirm Passphrase:</label>
             <input type="password" id="confirm_passphrase" name="confirm_passphrase" required>
         </div>
-        <button type="submit">Initialize Journal</button>
+        <button type="submit">Initialize Cruel World</button>
     </form>
 </div>
 

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "journal/db.hpp"
+#include "db.hpp"
 
 TEST(DatabaseTest, InitAndUser)
 {
