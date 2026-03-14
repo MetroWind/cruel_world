@@ -19,7 +19,7 @@ protected:
         config.root_url = "http://localhost:8080/";
         config.bind_address = "127.0.0.1";
         config.bind_port = 8080;
-        config.database_path = ":memory:";
+        config.data_dir = "."; // use current dir, app will look for data.db, static, templates
         config.oidc_url_prefix = "https://auth/";
         config.oidc_client_id = "client";
         config.oidc_client_secret = "secret";

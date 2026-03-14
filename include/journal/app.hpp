@@ -5,6 +5,7 @@
 #include <mw/auth.hpp>
 #include <nlohmann/json.hpp>
 #include <inja.hpp>
+#include <mw/url.hpp>
 #include <memory>
 #include <thread>
 #include <atomic>
@@ -29,8 +30,8 @@ private:
     CryptoEngine crypto_;
     SessionManager session_manager_;
     std::string root_path_;
-
     std::unique_ptr<mw::AuthInterface> auth_;
+    mw::URL root_url_;
     inja::Environment env_;
 
     std::atomic<bool> stop_reaper_{false};

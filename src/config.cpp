@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <c4/std/string.hpp>
+#include <mw/url.hpp>
 #include <ryml.hpp>
 #include <ryml_std.hpp>
 
@@ -34,6 +35,11 @@ mw::E<Config> loadConfig(const std::string& path)
         if(root.has_child("root_url"))
         {
             root["root_url"] >> cfg.root_url;
+            if (!mw::URL::fromStr(cfg.root_url))
+            {
+                return std::unexpected(
+                    mw::runtimeError("Invalid root_url in config"));
+            }
         }
         else
         {
@@ -59,14 +65,14 @@ mw::E<Config> loadConfig(const std::string& path)
             cfg.bind_port = 8080;
         }
 
-        if(root.has_child("database_path"))
+        if(root.has_child("data_dir"))
         {
-            root["database_path"] >> cfg.database_path;
+            root["data_dir"] >> cfg.data_dir;
         }
         else
         {
             return std::unexpected(
-                mw::runtimeError("Missing database_path in config"));
+                mw::runtimeError("Missing data_dir in config"));
         }
 
         if(root.has_child("oidc_url_prefix"))

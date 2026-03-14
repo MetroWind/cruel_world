@@ -15,21 +15,14 @@ JournalApp::JournalApp(const Config& config, mw::E<Database>&& db,
                        std::unique_ptr<mw::HTTPSessionInterface> http_client,
                        std::unique_ptr<mw::AuthInterface> auth)
     : mw::HTTPServer(mw::IPSocketInfo{config.bind_address, config.bind_port}),
-      config_(config), db_(std::move(db.value())), auth_(std::move(auth))
+      config_(config), db_(std::move(db.value())), auth_(std::move(auth)),
+      root_url_(mw::URL::fromStr(config.root_url).value())
 {
 
-    auto url_res = mw::URL::fromStr(config_.root_url);
-    if(url_res.has_value())
+    root_path_ = root_url_.path();
+    if(root_path_.empty() || root_path_.back() != '/')
     {
-        root_path_ = url_res.value().path();
-        if(root_path_.empty() || root_path_.back() != '/')
-        {
-            root_path_ += "/";
-        }
-    }
-    else
-    {
-        root_path_ = "/";
+        root_path_ += "/";
     }
 
     if(!auth_)
@@ -92,8 +85,8 @@ void JournalApp::render(Response& res, const std::string& template_name,
 
     try
     {
-        std::string content =
-            env_.render_file("templates/" + template_name, data);
+        std::string content = env_.render_file(
+            config_.data_dir + "/templates/" + template_name, data);
         res.set_content(content, "text/html");
     }
     catch(const std::exception& e)
@@ -107,14 +100,7 @@ void JournalApp::render(Response& res, const std::string& template_name,
 void JournalApp::discoverOIDC(
     std::unique_ptr<mw::HTTPSessionInterface> http_client)
 {
-    auto redirect_url_res = mw::URL::fromStr(config_.root_url);
-    if(!redirect_url_res.has_value())
-    {
-        std::cerr << "Invalid root URL." << std::endl;
-        return;
-    }
-    auto redirect_url = redirect_url_res.value();
-    redirect_url.appendPath("auth/callback");
+    auto redirect_url = mw::URL(root_url_).appendPath("auth/callback");
 
     auto auth_res = mw::AuthOpenIDConnect::create(
         config_.oidc_url_prefix, config_.oidc_client_id,
@@ -134,109 +120,81 @@ void JournalApp::discoverOIDC(
 
 void JournalApp::setup()
 {
-    server.Get(mw::URL::fromStr(config_.root_url).value().path(),
+    server.Get(root_url_.path(),
                [this](const Request& req, Response& res)
                { handleIndex(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("auth/login")
                    .path(),
                [this](const Request& req, Response& res)
                { handleLogin(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("auth/callback")
                    .path(),
                [this](const Request& req, Response& res)
                { handleCallback(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("auth/setup")
                    .path(),
                [this](const Request& req, Response& res)
                { handleSetupGet(req, res); });
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("auth/setup")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleSetupPost(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("auth/unlock")
                    .path(),
                [this](const Request& req, Response& res)
                { handleUnlockGet(req, res); });
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("auth/unlock")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleUnlockPost(req, res); });
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("auth/logout")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleLogout(req, res); });
 
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("entry/:slug")
                    .path(),
                [this](const Request& req, Response& res)
                { handleEntryGet(req, res); });
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("entry/:date")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleEntryPost(req, res); });
 
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("api/attachments")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleAttachmentPost(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("attachments/manage")
                    .path(),
                [this](const Request& req, Response& res)
                { handleAttachmentManage(req, res); });
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
+    server.Get(mw::URL(root_url_)
                    .appendPath("attachments/:slug")
                    .path(),
                [this](const Request& req, Response& res)
                { handleAttachmentGet(req, res); });
-    server.Post(mw::URL::fromStr(config_.root_url)
-                    .value()
+    server.Post(mw::URL(root_url_)
                     .appendPath("attachments/:slug/delete")
                     .path(),
                 [this](const Request& req, Response& res)
                 { handleAttachmentDelete(req, res); });
 
-    server.Get(mw::URL::fromStr(config_.root_url)
-                   .value()
-                   .appendPath("static/(.*)")
-                   .path(),
-               [&](const Request& req, Response& res)
-               {
-                   std::string path = req.matches[1];
-                   std::ifstream file("static/" + path);
-                   if(file.is_open())
-                   {
-                       std::stringstream buffer;
-                       buffer << file.rdbuf();
-                       res.set_content(buffer.str(), "text/css");
-                   }
-                   else
-                   {
-                       res.status = 404;
-                   }
-               });
+    server.set_mount_point(mw::URL(root_url_)
+                               .appendPath("static")
+                               .path(),
+                           config_.data_dir + "/static");
 }
 
 void JournalApp::handleIndex(const Request& req, Response& res)
@@ -244,8 +202,7 @@ void JournalApp::handleIndex(const Request& req, Response& res)
     std::string session_id = getSessionCookie(req);
     if(session_id.empty())
     {
-        res.set_redirect(mw::URL::fromStr(config_.root_url)
-                             .value()
+        res.set_redirect(mw::URL(root_url_)
                              .appendPath("auth/login")
                              .str());
         return;
@@ -254,8 +211,7 @@ void JournalApp::handleIndex(const Request& req, Response& res)
     auto session_opt = session_manager_.getSession(session_id);
     if(!session_opt.has_value())
     {
-        res.set_redirect(mw::URL::fromStr(config_.root_url)
-                             .value()
+        res.set_redirect(mw::URL(root_url_)
                              .appendPath("auth/login")
                              .str());
         return;
@@ -265,15 +221,13 @@ void JournalApp::handleIndex(const Request& req, Response& res)
     {
         if(session_opt.value().user_id == -1)
         {
-            res.set_redirect(mw::URL::fromStr(config_.root_url)
-                                 .value()
+            res.set_redirect(mw::URL(root_url_)
                                  .appendPath("auth/setup")
                                  .str());
         }
         else
         {
-            res.set_redirect(mw::URL::fromStr(config_.root_url)
-                                 .value()
+            res.set_redirect(mw::URL(root_url_)
                                  .appendPath("auth/unlock")
                                  .str());
         }
@@ -284,20 +238,32 @@ void JournalApp::handleIndex(const Request& req, Response& res)
     auto entry_res = db_.getEntry(session_opt.value().user_id, today);
     if(entry_res && entry_res.value())
     {
-        res.set_redirect(mw::URL::fromStr(config_.root_url)
-                             .value()
+        res.set_redirect(mw::URL(root_url_)
                              .appendPath("entry")
                              .appendPath(entry_res.value().value().slug)
                              .str());
         return;
     }
 
-    render(res, "editor.html",
-           {{"date", today},
-            {"markdown_body", ""},
-            {"html_content", ""},
-            {"is_edit_mode", true},
-            {"past_entries", getPastEntries(session_opt.value().user_id)}});
+    auto past_entries = getPastEntries(session_opt.value().user_id);
+    nlohmann::json tmpl_data = {{"date", today},
+                                {"markdown_body", ""},
+                                {"html_content", ""},
+                                {"is_edit_mode", true},
+                                {"past_entries", past_entries}};
+    if(!past_entries.empty())
+    {
+        tmpl_data["has_prev"] = true;
+        tmpl_data["prev_slug"] = past_entries[0]["slug"];
+        tmpl_data["prev_date"] = past_entries[0]["date"];
+    }
+    else
+    {
+        tmpl_data["has_prev"] = false;
+    }
+    tmpl_data["has_next"] = false;
+
+    render(res, "editor.html", tmpl_data);
 }
 
 void JournalApp::handleLogin(const Request&, Response& res)
@@ -382,8 +348,7 @@ void JournalApp::handleCallback(const Request& req, Response& res)
     }
 
     setSessionCookie(res, session_id_res.value());
-    res.set_redirect(mw::URL::fromStr(config_.root_url)
-                         .value()
+    res.set_redirect(mw::URL(root_url_)
                          .appendPath(redirect_path)
                          .str());
 }
@@ -555,12 +520,49 @@ void JournalApp::handleEntryGet(const Request& req, Response& res)
                          decrypted_body_res.value().end());
     std::string html = renderMarkdown(markdown);
 
-    render(res, "editor.html",
-           {{"date", entry.date},
-            {"markdown_body", markdown},
-            {"html_content", html},
-            {"is_edit_mode", false},
-            {"past_entries", getPastEntries(session->user_id)}});
+    auto past_entries = getPastEntries(session->user_id);
+    nlohmann::json tmpl_data = {{"date", entry.date},
+                                {"markdown_body", markdown},
+                                {"html_content", html},
+                                {"is_edit_mode", false},
+                                {"past_entries", past_entries}};
+    
+    tmpl_data["has_prev"] = false;
+    tmpl_data["has_next"] = false;
+
+    // past_entries is sorted from newest to oldest
+    for(size_t i = 0; i < past_entries.size(); ++i)
+    {
+        if(past_entries[i]["slug"] == entry.slug)
+        {
+            if(i + 1 < past_entries.size()) // older entry
+            {
+                tmpl_data["has_prev"] = true;
+                tmpl_data["prev_slug"] = past_entries[i + 1]["slug"];
+                tmpl_data["prev_date"] = past_entries[i + 1]["date"];
+            }
+            if(i > 0) // newer entry
+            {
+                tmpl_data["has_next"] = true;
+                tmpl_data["next_slug"] = past_entries[i - 1]["slug"];
+                tmpl_data["next_date"] = past_entries[i - 1]["date"];
+            }
+            else
+            {
+                // If it's the newest saved entry, but its date is not today,
+                // "Today" is technically the next entry.
+                if(entry.date != getCurrentDate())
+                {
+                    tmpl_data["has_next"] = true;
+                    tmpl_data["next_slug"] = ""; // Empty string to signify Today view
+                    tmpl_data["next_date"] = "Today";
+                }
+            }
+            break;
+        }
+    }
+
+    render(res, "editor.html", tmpl_data);
 }
 
 void JournalApp::handleEntryPost(const Request& req, Response& res)
@@ -753,8 +755,7 @@ void JournalApp::handleAttachmentDelete(const Request& req, Response& res)
         return;
     }
 
-    res.set_redirect(mw::URL::fromStr(config_.root_url)
-                         .value()
+    res.set_redirect(mw::URL(root_url_)
                          .appendPath("attachments/manage")
                          .str());
 }

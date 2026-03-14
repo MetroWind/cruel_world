@@ -18,7 +18,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    auto db_res = Database::open(config_res.value().database_path);
+    auto db_res = Database::open(config_res.value().data_dir + "/data.db");
     if(!db_res.has_value())
     {
         std::cerr << "Failed to open database: " << mw::errorMsg(db_res.error())
