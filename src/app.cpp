@@ -734,7 +734,9 @@ void JournalApp::handleAttachmentManage(const Request& req, Response& res)
     }
 
     render(res, "attachments.html",
-           {{"attachments", atts_json}, {"is_attachments_page", true}});
+           {{"attachments", atts_json},
+            {"is_attachments_page", true},
+            {"past_entries", getPastEntries(session->user_id)}});
 }
 
 void JournalApp::handleAttachmentDelete(const Request& req, Response& res)
