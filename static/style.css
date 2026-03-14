@@ -8,8 +8,8 @@
     --treasure-color: #d4af37; /* The "things I treasure" */
     --treasure-dim: rgba(212, 175, 55, 0.3);
     --border-color: #1a1a1c;
-    --font-ui: 'Inter', -apple-system, sans-serif;
-    --font-serif: 'Crimson Text', Georgia, serif;
+    --font-ui: 'Inter', "Source Han Sans SC VF", "Source Han Sans SC", "Noto Sans CJK SC VF", "Noto Sans CJK SC", -apple-system, sans-serif;
+    --font-serif: 'Crimson Text', Georgia, "Source Han Serif SC VF", "Source Han Serif SC", "Noto Serif CJK SC VF", "Noto Serif CJK SC", serif;
 }
 
 body, html {
