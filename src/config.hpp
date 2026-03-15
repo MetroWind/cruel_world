@@ -7,6 +7,7 @@ struct Config {
     std::string root_url;
     std::string bind_address;
     int bind_port;
+    std::string unix_socket;
     std::string data_dir;
     
     std::string oidc_url_prefix;

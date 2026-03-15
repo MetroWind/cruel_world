@@ -36,9 +36,17 @@ int main(int argc, char** argv)
 
     JournalApp app(config_res.value(), std::move(db_res));
 
-    std::cout << "Starting Cruel World server on "
-              << config_res.value().bind_address << ":"
-              << config_res.value().bind_port << std::endl;
+    if(config_res.value().unix_socket.empty())
+    {
+        std::cout << "Starting Cruel World server on "
+                  << config_res.value().bind_address << ":"
+                  << config_res.value().bind_port << std::endl;
+    }
+    else
+    {
+        std::cout << "Starting Cruel World server on unix socket: "
+                  << config_res.value().unix_socket << std::endl;
+    }
     auto err = app.start();
     if(!err.has_value())
     {

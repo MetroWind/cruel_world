@@ -65,6 +65,11 @@ mw::E<Config> loadConfig(const std::string& path)
             cfg.bind_port = 8080;
         }
 
+        if(root.has_child("unix_socket"))
+        {
+            root["unix_socket"] >> cfg.unix_socket;
+        }
+
         if(root.has_child("data_dir"))
         {
             root["data_dir"] >> cfg.data_dir;

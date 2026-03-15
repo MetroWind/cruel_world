@@ -51,9 +51,13 @@ cmake --build . -j $(nproc)
 The application uses a YAML configuration file. Example:
 
 ```yaml
-# Network settings
+# Network settings (TCP)
 bind_address: "127.0.0.1"
 bind_port: 8080
+
+# To listen on a Unix socket instead of TCP, uncomment the following line.
+# If unix_socket is provided, the server will ignore bind_address and bind_port.
+# unix_socket: "/run/cruel-world/cruel-world.sock"
 
 # The base URL for the application. All redirects and links are based on this.
 root_url: "http://localhost:8080/"
