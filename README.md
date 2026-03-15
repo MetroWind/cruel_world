@@ -1,4 +1,4 @@
-# Secure Online Cruel World
+# Cruel World
 
 A private, secure, and intimate online diary application built with C++23.
 
