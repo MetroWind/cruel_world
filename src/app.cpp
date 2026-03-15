@@ -17,8 +17,11 @@ JournalApp::JournalApp(const Config& config, mw::E<Database>&& db,
     : mw::HTTPServer(config.unix_socket.empty()
                          ? mw::HTTPServer::ListenAddress(mw::IPSocketInfo{
                                config.bind_address, config.bind_port})
-                         : mw::HTTPServer::ListenAddress(
-                               mw::SocketFileInfo{config.unix_socket})),
+                         : mw::HTTPServer::ListenAddress([](const std::string& path) {
+                               mw::SocketFileInfo s(path);
+                               s.permission = 0777;
+                               return s;
+                           }(config.unix_socket))),
       config_(config), db_(std::move(db.value())), auth_(std::move(auth)),
       root_url_(mw::URL::fromStr(config.root_url).value())
 {
